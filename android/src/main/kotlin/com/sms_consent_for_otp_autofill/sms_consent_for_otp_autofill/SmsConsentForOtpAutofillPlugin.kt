@@ -44,7 +44,13 @@ class SmsConsentForOtpAutofillPlugin: FlutterPlugin, MethodCallHandler, Activity
       "requestSms" -> {
         SmsRetriever.getClient(mActivity.applicationContext).startSmsUserConsent(call.argument<String>("senderPhoneNumber"))
 
-        mActivity.registerReceiver(smsVerificationReceiver, IntentFilter(SmsRetriever.SMS_RETRIEVED_ACTION))
+        // mActivity.registerReceiver(smsVerificationReceiver, IntentFilter(SmsRetriever.SMS_RETRIEVED_ACTION))
+        val filter = IntentFilter(SmsRetriever.SMS_RETRIEVED_ACTION)
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                    mActivity.registerReceiver(smsVerificationReceiver, filter, Context.RECEIVER_EXPORTED)
+                } else {
+                    mActivity.registerReceiver(smsVerificationReceiver, filter)
+                }
         result.success(null)
       }
     }
